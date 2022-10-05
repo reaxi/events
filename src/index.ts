@@ -16,21 +16,21 @@ export class PubSub<PayloadType> {
     }
 }
 
-export class EventSystem<PayloadType> {
-    private listeners: Map<string, PubSub<PayloadType>> = new Map();
+export class EventSystem<PayloadType, K extends { [key: string]: any }> {
+    private listeners: Map<keyof K, PubSub<PayloadType>> = new Map();
 
-    register(topic: string, fn: WithPayloadFunction<PayloadType>) {
+    register(topic: keyof K, fn: WithPayloadFunction<PayloadType>) {
         if (!this.listeners.has(topic)) {
             this.listeners.set(topic, new PubSub<PayloadType>());
         }
         this.listeners.get(topic)?.subscribe(fn);
     }
 
-    unregister(topic: string, fn: WithPayloadFunction<PayloadType>) {
+    unregister(topic: keyof K, fn: WithPayloadFunction<PayloadType>) {
         this.listeners.get(topic)?.unsubscribe(fn);
     }
 
-    emit(topic: string, payload?: PayloadType): void {
+    emit(topic: keyof K, payload?: PayloadType): void {
         this.listeners.get(topic)?.publish(payload);
     }
 }

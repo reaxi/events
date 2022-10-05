@@ -24,7 +24,10 @@ describe('Events: PubSub - Observer Pattern', () => {
 
 describe('Events: Topic Based System', () => {
     test('should do an topic based event system', () => {
-        const ev = new EventSystem<string>();
+        const ev = new EventSystem<
+            string,
+            { ['topic 1']; ['topic 2']; ['topic 3'] }
+        >();
 
         const fn1 = jest.fn(a => a);
         const fn2 = jest.fn(b => `${b} b`);
@@ -47,6 +50,8 @@ describe('Events: Topic Based System', () => {
         expect(fn1).toBeCalledTimes(1);
         expect(fn3).not.toBeCalled();
 
+        ev.unregister('topic 3', fn3);
         ev.emit('topic 3', 'hello');
+        expect(fn3).not.toBeCalled();
     });
 });
